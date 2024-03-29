@@ -55,7 +55,7 @@ def add_url():
     add_url_(db_url=app.config['DATABASE_URL'],
              name_table='urls',
              name_fields=('name', ),
-             data_fields=(url, ))
+             data_fields=(normalized_url, ))
 
     response = get_urls_(db_url=app.config['DATABASE_URL'],
                          name_table='urls',
