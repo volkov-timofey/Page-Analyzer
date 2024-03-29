@@ -1,0 +1,45 @@
+{% extends 'components/layout.html' %}
+
+{% block content %}
+
+<div class="container-lg mt-3">
+      <h1>Сайты</h1>
+
+    
+	<div class="table-responsive">
+	  <table class="table table-bordered table-hover text-nowrap" data-test="urls">
+		<thead>
+		<tr>
+		  <th>ID</th>
+		  <th>Имя</th>
+		  <th>Последняя проверка</th>
+		  <th>Код ответа</th>
+		</tr>
+		</thead>
+		
+		<tbody>
+		{% for id, name, data, status in urls %}
+			<tr>
+			  <td>{{ id }}</td>
+			  <td>
+				<a href="{{ url_for('get_table_id', id = id) }}">{{ name }}</a>
+			  </td>
+			  
+			  <td>
+				{% if data %}{{ data }}{% endif %}
+			  </td>
+			  
+			  
+			  <td>
+				{% if status %}{{ status }}{% endif %}
+			  </td>
+			  
+			</tr>
+		{% endfor %}  
+		</tbody>
+	  </table>
+	</div>
+
+</div>
+	
+{% endblock content %}
