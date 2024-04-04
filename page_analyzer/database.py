@@ -12,6 +12,7 @@ class DataBase:
         For example: postgresql://user:password@localhost:5432/mydb
         '''
         self.database_url = DATABASE_URL
+        self.connect = self._connect_db()
 
     def _connect_db(self):
         '''
@@ -23,17 +24,17 @@ class DataBase:
         except ValueError:
             print('Can`t establish connection to database')
 
-    def _close_connect_db(self, connect) -> None:
+    def close_connect_db(self) -> None:
         '''
         Closing connect to database
         '''
-        connect.close()
+        self.connect.close()
 
-    def _get_all_fields(self, connect, name_table: str) -> str:
+    def _get_all_fields(self, name_table: str) -> str:
         '''
         Getting all field names from the requested table
         '''
-        with connect.cursor() as cursor:
+        with self.connect.cursor() as cursor:
             cursor.execute(f'SELECT * FROM {name_table} LIMIT 0;')
             select_all = ', '.join([
                 row[0]
@@ -41,7 +42,6 @@ class DataBase:
                 else 'DATE(created_at)'
                 for row in cursor.description
             ])
-        self._close_connect_db(connect)
         return select_all
 
     def _add_where(self, clause_where: (str, str)):
@@ -78,10 +78,7 @@ class DataBase:
             )
 
         if not clause_select:
-            clause_select = self._get_all_fields(
-                self._connect_db(),
-                name_table
-            )
+            clause_select = self._get_all_fields(name_table)
 
         where_request, request_params = self._add_where(clause_where)
         order_request = self._add_order(clause_order)
@@ -90,11 +87,9 @@ class DataBase:
                    f' FROM {name_table}' \
                    f'{where_request}{order_request};'
 
-        connect = self._connect_db()
-        with connect.cursor() as cursor:
+        with self.connect.cursor() as cursor:
             cursor.execute(request_, request_params)
             result = cursor.fetchall()
-        self._close_connect_db(connect)
 
         return result
 
@@ -108,11 +103,9 @@ class DataBase:
         request_ = f'INSERT INTO {name_table} ({name_fields})' \
                    f' VALUES ({req_values});'
 
-        connect = self._connect_db()
-        with connect.cursor() as cursor:
+        with self.connect.cursor() as cursor:
             cursor.execute(request_, data_fields)
-        connect.commit()
-        self._close_connect_db(connect)
+        self.connect.commit()
 
     def left_join_urls_and_url_cheks(self):
         '''
@@ -128,10 +121,59 @@ class DataBase:
             GROUP BY urls.id, url_checks.status_code
             ORDER BY urls.id DESC;'''
 
-        connect = self._connect_db()
-        with connect.cursor() as cursor:
+        with self.connect.cursor() as cursor:
             cursor.execute(request_)
             result = cursor.fetchall()
-        self._close_connect_db(connect)
 
         return result
+
+# !------------
+    def get_urls(self, url):
+        '''
+        Get table inromation about urls
+        '''
+        name_table = 'urls'
+        clause_where = ('name', url)
+
+        return self.get_data_table(name_table, clause_where=clause_where)
+
+    def get_urls_by_id(self, id):
+        '''
+        Get table inromation about urls by id
+        '''
+        name_table = 'urls'
+        clause_where = ('id', id)
+
+        return self.get_data_table(name_table, clause_where=clause_where)
+
+    def get_url_checks(self, id):
+        '''
+        Get table inromation about cheks url
+        '''
+        name_table = 'url_checks'
+        clause_where = ('url_id', id)
+
+        return self.get_data_table(name_table,
+                                   clause_where=clause_where,
+                                   clause_order='created_at')
+
+    def add_url(self, url):
+        '''
+        Add inromation about url in table urls
+        '''
+        self.change_table(name_table='urls',
+                          name_fields=('name', ),
+                          data_fields=(url, ))
+
+    def add_url_checks(self, name_fields, data_fields):
+        '''
+        Add inromation about url check in table url_checks
+        '''
+        name_table = 'url_checks'
+        self.change_table(name_table, name_fields, data_fields)
+
+    def get_urls_with_checks(self):
+        '''
+        Get urls with checks about urls
+        '''
+        return self.left_join_urls_and_url_cheks()
