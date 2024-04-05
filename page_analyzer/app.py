@@ -97,15 +97,15 @@ def checks_url(id):
 
     urls = db.get_urls_by_id(id)
     id, name, _ = next(iter(urls))
-    tags_information = parse_html(name)
+    result_check = parse_html(name)
 
-    if not tags_information:
+    if not result_check:
         flash('Произошла ошибка при проверке', 'error')
         return redirect(url_for('get_table_id', id=id,))
 
-    tags_information['url_id'] = id
+    result_check['url_id'] = id
 
-    db.add_url_checks(tags_information)
+    db.add_url_checks(result_check)
 
     db.close_connect_db()
 

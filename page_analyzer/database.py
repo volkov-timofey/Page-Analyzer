@@ -165,13 +165,13 @@ class DataBase:
                           name_fields=('name', ),
                           data_fields=(url, ))
 
-    def add_url_checks(self, tags_information):
+    def add_url_checks(self, result_check):
         '''
         Add inromation about url check in table url_checks
         '''
         name_table = 'url_checks'
-        name_fields = tuple(tag for tag in tags_information)
-        values_fields = tuple(value for value in tags_information.values())
+        name_fields = tuple(tag for tag in result_check)
+        values_fields = tuple(value for value in result_check.values())
 
         self.change_table(name_table, name_fields, values_fields)
 
