@@ -17,7 +17,7 @@ def check_url(url: str):
     return None
 
 
-def parsing_html(url: str) -> dict | None:
+def parse_html(url: str) -> dict | None:
     '''
     Extracting information from availabily url
     '''

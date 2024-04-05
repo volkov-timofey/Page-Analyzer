@@ -6,7 +6,7 @@ from urllib.parse import urlsplit
 from dotenv import load_dotenv
 
 from page_analyzer.database import DataBase
-from page_analyzer.html_parser import parsing_html
+from page_analyzer.html_parser import parse_html
 from page_analyzer.utils import is_valid_url
 
 
@@ -96,19 +96,16 @@ def checks_url(id):
     db = DataBase(app.config['DATABASE_URL'])
 
     urls = db.get_urls_by_id(id)
-
     id, name, _ = next(iter(urls))
+    tags_information = parse_html(name)
 
-    tags_information = parsing_html(name)
     if not tags_information:
         flash('Произошла ошибка при проверке', 'error')
         return redirect(url_for('get_table_id', id=id,))
 
     tags_information['url_id'] = id
-    name_fields = tuple(tag for tag in tags_information)
-    values_fields = tuple(value for value in tags_information.values())
 
-    db.add_url_checks(name_fields, values_fields)
+    db.add_url_checks(tags_information)
 
     db.close_connect_db()
 
