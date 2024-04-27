@@ -22,7 +22,7 @@ Page Analyzer is a site that analyzes specified pages for SEO suitability.
 #### Clone the repository and run application:
 ```bash
 $ git clone https://github.com/volkov-timofey/Page-Analyzer.git
-$ cd python-project-83
+$ cd Page-Analyzer
 $ make build
 $ make start
 ```
