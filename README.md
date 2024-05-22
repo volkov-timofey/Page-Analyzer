@@ -7,8 +7,8 @@
 ### Information
 Page Analyzer is a site that analyzes specified pages for SEO suitability.
 
-### Demo application
-[https://page-analyzer-c72h.onrender.com/](https://page-analyzer-c72h.onrender.com/)
+<!--### Demo application
+[https://page-analyzer-c72h.onrender.com/](https://page-analyzer-c72h.onrender.com/) -->
 
 ### Install
 
